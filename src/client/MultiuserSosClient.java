@@ -6,18 +6,16 @@ import common.NetworkInterface;
 
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Scanner;
 
 /**
  * Created by Nicholas on 11/12/2015.
  */
 public class MultiuserSosClient extends MessageSource implements MessageListener {
-
-
     private InetAddress host;
-
     private int port;
-
     private String nickname;
+    private Scanner input;
 
 
     public MultiuserSosClient(InetAddress host, int port, String nickname) {
@@ -25,6 +23,7 @@ public class MultiuserSosClient extends MessageSource implements MessageListener
         this.host = host;
         this.port = port;
         this.nickname = nickname;
+        input = new Scanner(System.in);
     }
 
 
@@ -36,6 +35,11 @@ public class MultiuserSosClient extends MessageSource implements MessageListener
             Thread thread = new Thread(networkInterface);
             thread.start();
             networkInterface.write("/connect " + nickname);
+            while (true) {
+                if (input.hasNext()) {
+                    networkInterface.write(input.next());
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
