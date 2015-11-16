@@ -32,7 +32,7 @@ public class Test {
         }
         System.out.print(board.toString());
         System.out.println("" + points);
-         */
+
 
         List<String> players = new ArrayList<String>();
         players.add("one");
@@ -56,6 +56,7 @@ public class Test {
         game.move('S', 4, 4);
         game.move('S', 4, 2);
         game.move('S', 2, 2);
-        System.out.print(game.toString());
+        System.out.print(game.getBoard());
+         */
     }
 }

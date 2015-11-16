@@ -59,7 +59,7 @@ public class NetworkInterface extends MessageSource implements Runnable {
             }
             close();
         } catch (IOException e) {
-
+            closeMessageSource();
         }
     }
 }
