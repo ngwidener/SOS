@@ -47,11 +47,11 @@ public class SosGame {
         currentPlayer = iterator.next();
     }
 
-    public int move(String move, String player) throws GameException {
+    public int move(String move, int playerId) throws GameException {
         if (!playing()) {
             throw new GameException(GameException.GAME_STATE);
         }
-        if (!player.equals(currentPlayer.getName())) {
+        if (playerId != currentPlayer.getId()) {
             throw new GameException(GameException.OUT_OF_TURN);
         }
         int pointsEarned = parseMove(move);
