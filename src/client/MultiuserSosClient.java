@@ -30,11 +30,12 @@ public class MultiuserSosClient extends MessageSource implements MessageListener
 
     public void play() {
         try {
-            Socket socket  = new Socket();
+            Socket socket  = new Socket(host, port);
             NetworkInterface networkInterface = new NetworkInterface(socket);
-
+            networkInterface.addMessageListener(this);
             Thread thread = new Thread(networkInterface);
             thread.start();
+            networkInterface.write("/connect " + nickname);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -42,7 +43,7 @@ public class MultiuserSosClient extends MessageSource implements MessageListener
 
     @Override
     public void messageReceived(String message, MessageSource source) {
-
+        System.out.println(message);
     }
 
     @Override

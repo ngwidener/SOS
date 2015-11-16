@@ -20,6 +20,7 @@ public class MultiUserSosClientDriver {
             int port = Integer.parseInt(args[1]);
             String userName = args[2];
             client = new MultiuserSosClient(host, port, userName);
+            client.play();
         } catch (Exception e) {
 
         }
