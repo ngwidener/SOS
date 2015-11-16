@@ -97,6 +97,7 @@ public class MultiuserSosServer implements MessageListener {
                     quit(client);
                 }
             }
+            sendBoard();
         } catch (IOException e) {}
     }
 
@@ -113,6 +114,12 @@ public class MultiuserSosServer implements MessageListener {
             Thread thread = new Thread(client);
             thread.start();
             client.write("connected to server");
+        }
+    }
+
+    public void sendBoard() throws IOException {
+        for (NetworkInterface client : clients) {
+            client.write(game.getBoard());
         }
     }
 }
