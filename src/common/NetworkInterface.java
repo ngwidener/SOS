@@ -1,20 +1,18 @@
 package common;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 
 public class NetworkInterface extends MessageSource implements Runnable {
 
     private static final int TIME_OUT = 5000;
 
     private Socket socket;
-    private BufferedReader in;
-    private BufferedWriter out;
+    private Scanner in;
+    private DataOutputStream out;
 
     public NetworkInterface(InetAddress host, int port) throws IOException {
         this(new Socket(host, port));
@@ -24,17 +22,20 @@ public class NetworkInterface extends MessageSource implements Runnable {
         super();
         this.socket = socket;
         socket.setSoTimeout(TIME_OUT);
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        in = new Scanner(socket.getInputStream());
+        out = new DataOutputStream(socket.getOutputStream());
     }
 
     public void write(String message) throws IOException {
+        /**
         if (!message.endsWith("\n"))
             message += "\n";
         out.flush();
-        out.write(message);
+         */
+        out.writeBytes(" " + message + " \n");
     }
 
+    /**
     public void read() throws IOException {
         String message = "";
         String line;
@@ -43,6 +44,7 @@ public class NetworkInterface extends MessageSource implements Runnable {
         if (!message.equals(""))
             notifyReceipt(message);
     }
+     */
 
     public void close() throws IOException {
         in.close();
@@ -54,11 +56,15 @@ public class NetworkInterface extends MessageSource implements Runnable {
     @Override
     public void run() {
         try {
-            while (!socket.isClosed() && !socket.isInputShutdown()) {
-                read();
+            while (true) {
+                try {
+                    System.out.print(in.next());
+                }
+                catch (NoSuchElementException noe) {
+
+                }
             }
-            close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             closeMessageSource();
         }
     }
