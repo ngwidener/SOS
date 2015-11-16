@@ -79,6 +79,7 @@ public class MultiuserSosServer implements MessageListener {
 
     @Override
     public void messageReceived(String message, MessageSource source) {
+        System.out.print(message);
         try {
             if (source instanceof NetworkInterface) {
                 NetworkInterface client = (NetworkInterface) source;
@@ -89,7 +90,7 @@ public class MultiuserSosServer implements MessageListener {
                 if (msgArray[0].equals("/play")) {
                     play(client);
                 }
-                if (msgArray[0].equals("/move") && msgArray.length == 4) {
+                if (msgArray[0].equals("/move")) {
                     move(message, client);
                 }
                 if (msgArray[0].equals("/quit")) {

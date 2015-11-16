@@ -59,7 +59,7 @@ public class NetworkInterface extends MessageSource implements Runnable {
             while (true) {
                 String message;
                 while ((message = in.readLine()) != null) {
-                    notifyReceipt(message + "\n");
+                    notifyReceipt(message);
                 }
             }
         } catch (IOException e) {
