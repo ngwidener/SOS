@@ -11,7 +11,7 @@ public class NetworkInterface extends MessageSource implements Runnable {
     private static final int TIME_OUT = 5000;
 
     private Socket socket;
-    private Scanner in;
+    private BufferedReader in;
     private DataOutputStream out;
 
     public NetworkInterface(InetAddress host, int port) throws IOException {
@@ -21,8 +21,8 @@ public class NetworkInterface extends MessageSource implements Runnable {
     public NetworkInterface(Socket socket) throws IOException {
         super();
         this.socket = socket;
-        socket.setSoTimeout(TIME_OUT);
-        in = new Scanner(socket.getInputStream());
+        //socket.setSoTimeout(TIME_OUT);
+        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new DataOutputStream(socket.getOutputStream());
     }
 
@@ -32,7 +32,7 @@ public class NetworkInterface extends MessageSource implements Runnable {
             message += "\n";
         out.flush();
          */
-        out.writeBytes(" " + message + " \n");
+        out.writeBytes(message + " \n");
     }
 
     /**
@@ -57,14 +57,12 @@ public class NetworkInterface extends MessageSource implements Runnable {
     public void run() {
         try {
             while (true) {
-                try {
-                    System.out.print(in.next());
-                }
-                catch (NoSuchElementException noe) {
-
+                String message;
+                while ((message = in.readLine()) != null) {
+                    notifyReceipt(message + "\n");
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             closeMessageSource();
         }
     }

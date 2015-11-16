@@ -23,7 +23,7 @@ public abstract class MessageSource {
         for (MessageListener listener :
                 new ArrayList<MessageListener>(messageListeners)) {
             // We wrap this in a try/catch block so that just in case
-            // one of our observers screws up, we don’t want to stop
+            // one of our observers screws up, we don't want to stop
             // notifying other observers.
             try {
                 listener.messageReceived(message, this);
@@ -35,8 +35,8 @@ public abstract class MessageSource {
 
     protected void closeMessageSource() {
         // Here we need to iterate over a *copy* of our messageListeners list.
-        // The reason is because if the listener’s ’sourceClosed’ method
-        // removes that listener from this subject, we’d get a
+        // The reason is because if the listener's sourceClosed method
+        // removes that listener from this subject, we'd get a
         // ConcurrentModificationException if we were iterating over the
         // original list.
         for (MessageListener listener :
@@ -45,7 +45,7 @@ public abstract class MessageSource {
                 listener.sourceClosed(this);
             } catch (RuntimeException ex) {
                 // Ignore any exceptions encountered when trying to close
-                // a source. There’s a similar rationale here as we had
+                // a source. There's a similar rationale here as we had
                 // with ignoring exceptions when we tried to close streams.
             }
         }

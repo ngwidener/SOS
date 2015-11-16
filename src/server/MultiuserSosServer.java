@@ -43,6 +43,7 @@ public class MultiuserSosServer implements MessageListener {
 
     @Override
     public void messageReceived(String message, MessageSource source) {
+        System.out.print(message);
         if (source instanceof NetworkInterface) {
             NetworkInterface client = (NetworkInterface)source;
             String[] msgArray = message.split("\\s+");

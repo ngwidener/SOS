@@ -43,7 +43,7 @@ public class MultiuserSosClient extends MessageSource implements MessageListener
 
     @Override
     public void messageReceived(String message, MessageSource source) {
-        System.out.println(message);
+        System.out.print(message);
     }
 
     @Override
