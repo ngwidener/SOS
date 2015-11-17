@@ -14,10 +14,6 @@ public class SosGame {
     private Player currentPlayer;
     private Iterator<Player> iterator;
 
-    public SosGame() {
-        this(DEFAULT_BOARD_SIZE);
-    }
-
     public SosGame(int boardSize) {
         board = new SosBoard(boardSize);
         this.boardSize = boardSize;

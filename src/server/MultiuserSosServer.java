@@ -13,7 +13,6 @@ import java.util.ArrayList;
 public class MultiuserSosServer implements MessageListener {
 
     private SosGame game;
-    private int boardSize;
     private ServerSocket serverSocket;
     private ArrayList<NetworkInterface> clients;
 
@@ -23,7 +22,6 @@ public class MultiuserSosServer implements MessageListener {
 
     public MultiuserSosServer(int port, int boardSize) throws IOException {
         game = new SosGame(boardSize);
-        this.boardSize = boardSize;
         serverSocket = new ServerSocket(port);
         clients = new ArrayList<NetworkInterface>();
     }
