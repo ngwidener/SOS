@@ -36,10 +36,10 @@ public class MultiuserSosServer implements MessageListener {
             game.addPlayer(username, clients.indexOf(client));
         } catch (GameException e) {
             if (e.getType() == GameException.INVALID_NAME) {
-                client.write("Error: That username is taken.\nChoose another with /connect <username>");
+                client.write("Error: That username is taken.\nChoose another with /connect <username>\n");
             }
             else {
-                client.write("Error: A game is already in progress.");
+                client.write("Error: A game is already in progress.\n");
             }
         }
     }
@@ -49,10 +49,10 @@ public class MultiuserSosServer implements MessageListener {
             game.play();
         } catch (GameException e) {
             if (e.getType() == GameException.NOT_ENOUGH_PLAYERS) {
-                client.write("Error: At least two players are needed to start a game");
+                client.write("Error: At least two players are needed to start a game\n");
             }
             else {
-                client.write("A game is already in progress.");
+                client.write("A game is already in progress.\n");
             }
         }
     }
@@ -60,13 +60,13 @@ public class MultiuserSosServer implements MessageListener {
     public void move(String move, NetworkInterface client) throws IOException {
         try {
             int nextPlayer = game.move(move, clients.indexOf(client));
-            clients.get(nextPlayer).write("It is your turn");
+            clients.get(nextPlayer).write("It is your turn\n");
         } catch (GameException e) {
             if (e.getType() == GameException.OUT_OF_TURN) {
-                client.write("Error: It is not your turn");
+                client.write("Error: It is not your turn\n");
             }
             else {
-                client.write("Error: Game not started");
+                client.write("Error: Game not started\n");
             }
         }
     }
@@ -83,18 +83,20 @@ public class MultiuserSosServer implements MessageListener {
         try {
             if (source instanceof NetworkInterface) {
                 NetworkInterface client = (NetworkInterface) source;
-                String[] msgArray = message.split("\\s+");
-                if (msgArray[0].equals("/connect") && msgArray.length > 1) {
-                    connect(msgArray[1], client);
-                }
-                if (msgArray[0].equals("/play")) {
-                    play(client);
-                }
-                if (msgArray[0].equals("/move")) {
-                    move(message, client);
-                }
-                if (msgArray[0].equals("/quit")) {
-                    quit(client);
+                if (!message.isEmpty()) {
+                    String[] msgArray = message.split("\\s+");
+                    if (msgArray[0].equals("/connect") && msgArray.length > 1) {
+                        connect(msgArray[1], client);
+                    }
+                    if (msgArray[0].equals("/play")) {
+                        play(client);
+                    }
+                    if (msgArray[0].equals("/move")) {
+                        move(message, client);
+                    }
+                    if (msgArray[0].equals("/quit")) {
+                        quit(client);
+                    }
                 }
             }
             sendBoard();
@@ -113,7 +115,7 @@ public class MultiuserSosServer implements MessageListener {
             clients.add(client);
             Thread thread = new Thread(client);
             thread.start();
-            client.write("connected to server");
+            client.write("connected to server\n");
         }
     }
 

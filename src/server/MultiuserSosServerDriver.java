@@ -8,13 +8,12 @@ public class MultiuserSosServerDriver {
         }
         try {
             MultiuserSosServer server;
-            int port = Integer.parseInt(args[0]);
             if (args.length == 2) {
-                int boardSize = Integer.parseInt(args[1]);
-                server = new MultiuserSosServer(port, boardSize);
+                server = new MultiuserSosServer(Integer.parseInt(args[0]),
+                                                Integer.parseInt(args[1]));
             }
             else {
-                server = new MultiuserSosServer(port);
+                server = new MultiuserSosServer(Integer.parseInt(args[0]));
             }
             server.listen();
         }

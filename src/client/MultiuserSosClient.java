@@ -4,6 +4,7 @@ import common.MessageListener;
 import common.MessageSource;
 import common.NetworkInterface;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
@@ -11,43 +12,31 @@ import java.util.Scanner;
 /**
  * Created by Nicholas on 11/12/2015.
  */
-public class MultiuserSosClient extends MessageSource implements MessageListener {
-    private InetAddress host;
-    private int port;
-    private String nickname;
-    private Scanner input;
+public class MultiuserSosClient implements MessageListener {
+    private NetworkInterface netInterface;
+    private Scanner inputScanner;
 
 
-    public MultiuserSosClient(InetAddress host, int port, String nickname) {
-        super();
-        this.host = host;
-        this.port = port;
-        this.nickname = nickname;
-        input = new Scanner(System.in);
+    public MultiuserSosClient(InetAddress host, int port) throws IOException {
+        netInterface = new NetworkInterface(host, port);
+        netInterface.addMessageListener(this);
+        (new Thread(netInterface)).start();
+        inputScanner = new Scanner(System.in);
     }
 
 
-    public void play() {
-        try {
-            Socket socket  = new Socket(host, port);
-            NetworkInterface networkInterface = new NetworkInterface(socket);
-            networkInterface.addMessageListener(this);
-            Thread thread = new Thread(networkInterface);
-            thread.start();
-            networkInterface.write("/connect " + nickname);
-            while (true) {
-                if (input.hasNext()) {
-                    networkInterface.write(input.next());
-                }
+    public void connect(String username) throws IOException {
+        netInterface.write("/connect " + username + "\n");
+        while (true) {
+            if (inputScanner.hasNextLine()) {
+                netInterface.write(inputScanner.nextLine() + "\n");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
     @Override
     public void messageReceived(String message, MessageSource source) {
-        System.out.print(message);
+        System.out.print(message + "\n");
     }
 
     @Override

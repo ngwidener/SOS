@@ -32,7 +32,7 @@ public class NetworkInterface extends MessageSource implements Runnable {
             message += "\n";
         out.flush();
          */
-        out.writeBytes(message + " \n");
+        out.writeBytes(message);
     }
 
     /**

@@ -72,7 +72,7 @@ public class SosGame {
     private int parseMove(String move) throws GameException {
         try {
             String[] moveArr = move.split("\\s+");
-            return board.move(Character.toUpperCase(moveArr[1].toCharArray()[0]),
+            return board.move(Character.toUpperCase((moveArr[1].toCharArray())[0]),
                                 Integer.parseInt(moveArr[2]),
                                 Integer.parseInt(moveArr[3]));
         } catch (NumberFormatException e) {
