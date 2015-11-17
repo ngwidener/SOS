@@ -18,10 +18,7 @@ public class MultiuserSosServer implements MessageListener {
     private ArrayList<NetworkInterface> clients;
 
     public MultiuserSosServer(int port) throws IOException {
-        game = new SosGame();
-        boardSize = 3;
-        serverSocket = new ServerSocket(port);
-        clients = new ArrayList<NetworkInterface>();
+        this (port, SosGame.DEFAULT_BOARD_SIZE);
     }
 
     public MultiuserSosServer(int port, int boardSize) throws IOException {
@@ -31,95 +28,109 @@ public class MultiuserSosServer implements MessageListener {
         clients = new ArrayList<NetworkInterface>();
     }
 
-    public void connect(String username, NetworkInterface client) throws IOException {
-        try {
-            game.addPlayer(username, clients.indexOf(client));
-        } catch (GameException e) {
-            if (e.getType() == GameException.INVALID_NAME) {
-                client.write("Error: That username is taken.\nChoose another with /connect <username>\n");
-            }
-            else {
-                client.write("Error: A game is already in progress.\n");
-            }
-        }
-    }
-
-    public void play(NetworkInterface client) throws IOException {
-        try {
-            game.play();
-        } catch (GameException e) {
-            if (e.getType() == GameException.NOT_ENOUGH_PLAYERS) {
-                client.write("Error: At least two players are needed to start a game\n");
-            }
-            else {
-                client.write("A game is already in progress.\n");
-            }
-        }
-    }
-
-    public void move(String move, NetworkInterface client) throws IOException {
-        try {
-            int nextPlayer = game.move(move, clients.indexOf(client));
-        } catch (GameException e) {
-            if (e.getType() == GameException.OUT_OF_TURN) {
-                client.write("Error: It is not your turn\n");
-            }
-            else {
-                client.write("Error: Game not started\n");
-            }
-        }
-    }
-
-    public void quit(NetworkInterface client) {
-        clients.remove(client);
-        client.removeMessageListener(this);
-        game = new SosGame(boardSize);
-    }
-
-    @Override
-    public void messageReceived(String message, MessageSource source) {
-        try {
-            if (source instanceof NetworkInterface) {
-                NetworkInterface client = (NetworkInterface) source;
-                if (!message.isEmpty()) {
-                    String[] msgArray = message.split("\\s+");
-                    if (msgArray[0].equals("/connect") && msgArray.length > 1) {
-                        connect(msgArray[1], client);
-                    }
-                    if (msgArray[0].equals("/play")) {
-                        play(client);
-                    }
-                    if (msgArray[0].equals("/move")) {
-                        move(message, client);
-                    }
-                    if (msgArray[0].equals("/quit")) {
-                        quit(client);
-                    }
-                }
-            }
-            sendBoard();
-        } catch (IOException e) {}
-    }
-
-    @Override
-    public void sourceClosed(MessageSource source) {
-
-    }
-
     public void listen() throws IOException {
         while (!serverSocket.isClosed()) {
             NetworkInterface client = new NetworkInterface(serverSocket.accept());
             client.addMessageListener(this);
             clients.add(client);
-            Thread thread = new Thread(client);
-            thread.start();
-            client.write("connected to server\n");
+            (new Thread(client)).start();
         }
     }
 
-    public void sendBoard() throws IOException {
+    public void privateMessage(String message, NetworkInterface client) {
+        client.write(message);
+    }
+
+    public void broadcastMessage(String message) {
         for (NetworkInterface client : clients) {
-            client.write(game.getBoard());
+            client.write(message);
         }
+    }
+
+    public void connect(String command, NetworkInterface sender) {
+        try {
+            game.addPlayer(command.split("\\s+")[1], clients.indexOf(sender));
+        }
+        catch (GameException e) {
+            if (e.getType() == GameException.INVALID_NAME) {
+                privateMessage("Error: That username is taken.\n" +
+                        "       Choose another with /connect <username>", sender);
+            }
+            else {
+                privateMessage("Error: A game is already in progress.", sender);
+            }
+        }
+    }
+
+    public void play(NetworkInterface sender) {
+        try {
+            int firstPlayer = game.play();
+            broadcastMessage(game.getBoard());
+            broadcastMessage("It is " + game.getPlayerName(firstPlayer) + "'s turn.");
+        } catch (GameException e) {
+            if (e.getType() == GameException.NOT_ENOUGH_PLAYERS) {
+                privateMessage("Error: At least two players are needed to start a game.", sender);
+            }
+            else {
+                privateMessage("Error: A game is already in progress.", sender);
+            }
+        }
+    }
+
+    public void move(String command, NetworkInterface sender) {
+        try {
+            int nextPlayer = game.move(command, clients.indexOf(sender));
+            if (nextPlayer >= 0) {
+                broadcastMessage(game.getBoard());
+                broadcastMessage("It is " + game.getPlayerName(nextPlayer) + "'s turn.");
+            }
+            else {
+                broadcastMessage(game.toString());
+                broadcastMessage("Game Over");
+                game.reset();
+            }
+        } catch (GameException e) {
+            if (e.getType() == GameException.GAME_STATE) {
+                privateMessage("Error: No game in progress.", sender);
+            }
+            else if (e.getType() == GameException.OUT_OF_TURN) {
+                privateMessage("Error: It is not your turn.", sender);
+            } else {
+                broadcastMessage("Error: Invalid move");
+            }
+        }
+    }
+
+    public void quit(NetworkInterface client) {
+        game.removePlayer(clients.indexOf(client));
+        game.reset();
+        clients.remove(client);
+        client.close();
+    }
+
+    @Override
+    public void messageReceived(String message, MessageSource source) {
+        NetworkInterface client = (NetworkInterface) source;
+        if (message.startsWith("/connect") && !message.endsWith("/connect")) {
+            connect(message, client);
+        }
+        else if (message.startsWith("/play")) {
+            play(client);
+        }
+        else if (message.startsWith("/move") && ! message.endsWith("/move")) {
+            move(message, client);
+        }
+        else if (message.startsWith("/quit")) {
+            quit(client);
+        }
+        else {
+            privateMessage("Error: Not a recognized command.", client);
+        }
+    }
+
+    @Override
+    public void sourceClosed(MessageSource source) {
+        clients.remove(source);
+        source.removeMessageListener(this);
     }
 }

@@ -5,10 +5,11 @@ import java.util.Iterator;
 import java.util.ArrayList;
 
 public class SosGame {
-    private static final int DEFAULT_BOARD_SIZE = 3;
-    private static final int MIN_PLAYERS = 2;
+    public static final int DEFAULT_BOARD_SIZE = 3;
+    public static final int MIN_PLAYERS = 2;
 
     private SosBoard board;
+    private int boardSize;
     private ArrayList<Player> players;
     private Player currentPlayer;
     private Iterator<Player> iterator;
@@ -19,6 +20,7 @@ public class SosGame {
 
     public SosGame(int boardSize) {
         board = new SosBoard(boardSize);
+        this.boardSize = boardSize;
         players = new ArrayList<Player>();
         currentPlayer = null;
         iterator = null;
@@ -35,7 +37,11 @@ public class SosGame {
         players.add(new Player(name, id));
     }
 
-    public void play() throws GameException {
+    public void removePlayer(int id) {
+        players.remove(getPlayer(id));
+    }
+
+    public int play() throws GameException {
         if (players.size() < MIN_PLAYERS) {
             throw new GameException(GameException.NOT_ENOUGH_PLAYERS);
         }
@@ -45,6 +51,7 @@ public class SosGame {
         Collections.shuffle(players);
         iterator = players.iterator();
         currentPlayer = iterator.next();
+        return currentPlayer.getId();
     }
 
     public int move(String move, int playerId) throws GameException {
@@ -80,6 +87,33 @@ public class SosGame {
         }
     }
 
+    public boolean playing() {
+        boolean playing = false;
+        if (currentPlayer != null) {
+            playing = true;
+        }
+        return playing;
+    }
+
+    public void reset() {
+        board = new SosBoard(boardSize);
+        currentPlayer = null;
+        iterator = null;
+    }
+
+    public String getPlayerName(int id) {
+        return getPlayer(id).getName();
+    }
+
+    private Player getPlayer(int id) {
+        Player player = null;
+        for (Player p : players) {
+            if (p.getId() == id)
+                player = p;
+        }
+        return player;
+    }
+
     private void next() {
         if (board.isFull()) {
             currentPlayer = null;
@@ -93,14 +127,6 @@ public class SosGame {
                 currentPlayer = iterator.next();
             }
         }
-    }
-
-    public boolean playing() {
-        boolean playing = false;
-        if (currentPlayer != null) {
-            playing = true;
-        }
-        return playing;
     }
 
     public String getBoard() {

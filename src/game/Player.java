@@ -29,6 +29,6 @@ public class Player {
     }
 
     public String toString() {
-        return "Player " + name + " has " + points + " points\n";
+        return name + " has " + points + " points\n";
     }
 }
