@@ -18,7 +18,7 @@ public class SosGame {
     }
 
     public SosGame(int boardSize) {
-        board = new SosBoard(3);
+        board = new SosBoard(boardSize);
         players = new ArrayList<Player>();
         currentPlayer = null;
         iterator = null;

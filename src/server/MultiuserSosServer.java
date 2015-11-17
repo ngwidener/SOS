@@ -60,7 +60,6 @@ public class MultiuserSosServer implements MessageListener {
     public void move(String move, NetworkInterface client) throws IOException {
         try {
             int nextPlayer = game.move(move, clients.indexOf(client));
-            clients.get(nextPlayer).write("It is your turn\n");
         } catch (GameException e) {
             if (e.getType() == GameException.OUT_OF_TURN) {
                 client.write("Error: It is not your turn\n");
@@ -79,7 +78,6 @@ public class MultiuserSosServer implements MessageListener {
 
     @Override
     public void messageReceived(String message, MessageSource source) {
-        System.out.print(message);
         try {
             if (source instanceof NetworkInterface) {
                 NetworkInterface client = (NetworkInterface) source;

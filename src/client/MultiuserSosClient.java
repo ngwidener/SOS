@@ -6,7 +6,6 @@ import common.NetworkInterface;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.util.Scanner;
 
 /**
@@ -26,12 +25,15 @@ public class MultiuserSosClient implements MessageListener {
 
 
     public void connect(String username) throws IOException {
-        netInterface.write("/connect " + username + "\n");
-        while (true) {
+        String command = "/connect " + username;
+        netInterface.write(command);
+        while (!command.startsWith("/quit")) {
             if (inputScanner.hasNextLine()) {
-                netInterface.write(inputScanner.nextLine() + "\n");
+                command = inputScanner.nextLine();
+                netInterface.write(command);
             }
         }
+        netInterface.close();
     }
 
     @Override
@@ -41,6 +43,6 @@ public class MultiuserSosClient implements MessageListener {
 
     @Override
     public void sourceClosed(MessageSource source) {
-
+        source.removeMessageListener(this);
     }
 }

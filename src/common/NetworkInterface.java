@@ -27,30 +27,17 @@ public class NetworkInterface extends MessageSource implements Runnable {
     }
 
     public void write(String message) throws IOException {
-        /**
-        if (!message.endsWith("\n"))
+        if (!message.endsWith("\n")) {
             message += "\n";
-        out.flush();
-         */
+        }
         out.writeBytes(message);
     }
 
-    /**
-    public void read() throws IOException {
-        String message = "";
-        String line;
-        while ((line = in.readLine()) != null)
-            message += line;
-        if (!message.equals(""))
-            notifyReceipt(message);
-    }
-     */
-
     public void close() throws IOException {
+        closeMessageSource();
         in.close();
         out.close();
         socket.close();
-        closeMessageSource();
     }
 
     @Override

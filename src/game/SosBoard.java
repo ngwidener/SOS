@@ -16,9 +16,11 @@ public class SosBoard {
         try {
             if (letter == 'S' && grid[row][column] == '\0') {
                 grid[row][column] = 'S';
+                squaresLeft--;
                 pointsEarned = pointCheck(2, row, column);
             } else if (letter == 'O' && grid[row][column] == '\0') {
                 grid[row][column] = 'O';
+                squaresLeft--;
                 pointsEarned = pointCheck(1, row, column);
             }
             else pointsEarned = -1;
