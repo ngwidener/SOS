@@ -7,9 +7,6 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class NetworkInterface extends MessageSource implements Runnable {
-
-    private static final int TIME_OUT = 5000;
-
     private Socket socket;
     private BufferedReader in;
     private DataOutputStream out;
@@ -21,49 +18,46 @@ public class NetworkInterface extends MessageSource implements Runnable {
     public NetworkInterface(Socket socket) throws IOException {
         super();
         this.socket = socket;
-        //socket.setSoTimeout(TIME_OUT);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new DataOutputStream(socket.getOutputStream());
     }
 
-    public void write(String message) throws IOException {
-        /**
-        if (!message.endsWith("\n"))
+    public void write(String message) {
+        if (!message.endsWith("\n")) {
             message += "\n";
-        out.flush();
-         */
-        out.writeBytes(message + " \n");
-    }
-
-    /**
-    public void read() throws IOException {
-        String message = "";
-        String line;
-        while ((line = in.readLine()) != null)
-            message += line;
-        if (!message.equals(""))
-            notifyReceipt(message);
-    }
-     */
-
-    public void close() throws IOException {
-        in.close();
-        out.close();
-        socket.close();
-        closeMessageSource();
+        }
+        if (!socket.isClosed() && !socket.isOutputShutdown()) {
+            try {
+                out.writeBytes(message);
+            } catch (IOException e) {
+                close();
+            }
+        }
     }
 
     @Override
     public void run() {
-        try {
-            while (true) {
-                String message;
-                while ((message = in.readLine()) != null) {
-                    notifyReceipt(message);
-                }
+        String message = null;
+        while (!socket.isClosed() && !socket.isInputShutdown()) {
+            try {
+                message = in.readLine();
+            } catch (IOException e) {
+                close();
             }
+            if (message != null) {
+                notifyReceipt(message);
+            }
+        }
+    }
+
+    public void close() {
+        closeMessageSource();
+        try {
+            in.close();
+            out.close();
+            socket.close();
         } catch (IOException e) {
-            closeMessageSource();
+
         }
     }
 }
