@@ -13,8 +13,14 @@ import java.net.Socket;
  * @version November 2015
  */
 public class NetworkInterface extends MessageSource implements Runnable {
+
+    /**Network interface socker*/
     private Socket socket;
+
+    /**Reader for the data coming in*/
     private BufferedReader in;
+
+    /**Stream for the data going out*/
     private DataOutputStream out;
 
     /**
