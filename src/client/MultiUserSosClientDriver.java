@@ -1,9 +1,18 @@
 package client;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 
 /**
- * Created by Nicholas on 11/13/2015.
+ * Runs our MultiuserSosClient and checks for valid input
+ * as well as exception handling.
+ *
+ * @author Jameson Burchette
+ * @author Nicholas Widener
+ * @version November 2015
  */
 public class MultiUserSosClientDriver {
     public static void main(String[] args) {
@@ -15,8 +24,20 @@ public class MultiUserSosClientDriver {
             MultiuserSosClient client = new MultiuserSosClient(InetAddress.getByName(args[0]),
                                                                Integer.parseInt(args[1]));
             client.connect(args[2]);
-        } catch (Exception e) {
-            e.printStackTrace();
+        }catch (NumberFormatException e) {
+            System.out.println("Error: Your second argument doesn't seem to be a number.");
+            System.out.println("usage: client.MultiUserSosClientDriver <host> <port> <username>");
+            System.exit(1);
+        } catch (UnknownHostException e) {
+            System.out.println("Error: The IP address of " + args[0] + " could not be determined.");
+            System.exit(1);
+        } catch (SocketException se) {
+            System.out.println("Error: Connection refuse.");
+            System.exit(1);
+        } catch (SocketTimeoutException e) {
+            System.out.println("Error: A response was not received within the allotted time.");
+        } catch (IOException ioe) {
+            System.out.println("Error: Something went wrong while sending or receiving data.");
             System.exit(1);
         }
     }

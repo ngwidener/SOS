@@ -3,6 +3,9 @@ package common;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Method provided by Dr. Kreahling for the message source.
+ */
 public abstract class MessageSource {
     private List<MessageListener> messageListeners;
 
