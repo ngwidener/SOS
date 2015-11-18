@@ -114,8 +114,10 @@ public class SosBoard {
         int curColumn = column - distance;
         while (curRow <= row && curColumn <= column) {
             try {
-                if (grid[curRow][curColumn] == 'S' && grid[curRow + 1][curColumn + 1] == 'O' && grid[curRow + 2][curColumn + 2] == 'S')
+                if (grid[curRow][curColumn] == 'S' && grid[curRow + 1][curColumn + 1] == 'O' &&
+                        grid[curRow + 2][curColumn + 2] == 'S') {
                     pointsEarned++;
+                }
             } catch (ArrayIndexOutOfBoundsException e) {}
             curRow++;
             curColumn++;
@@ -136,8 +138,10 @@ public class SosBoard {
         int curColumn = column - distance;
         while (curRow >= row&& curColumn <= column) {
             try {
-                if (grid[curRow][curColumn] == 'S' && grid[curRow - 1][curColumn + 1] == 'O' && grid[curRow - 2][curColumn + 2] == 'S')
+                if (grid[curRow][curColumn] == 'S' && grid[curRow - 1][curColumn + 1] == 'O' &&
+                        grid[curRow - 2][curColumn + 2] == 'S') {
                     pointsEarned++;
+                }
             } catch (ArrayIndexOutOfBoundsException e) {}
             curRow--;
             curColumn++;
@@ -161,17 +165,22 @@ public class SosBoard {
      * @return the game board.
      */
     public String toString() {
-        String board = "";
+        String border = "\n\t+";
         for (int i = 0; i < size; i++) {
-            board += "\t" + i;
+            border += "---+";
         }
-        board += "\n";
+        border += "\n";
+        String board = "\t";
         for (int i = 0; i < size; i++) {
-            board += i + "\t";
+            board += "  " + i + " ";
+        }
+        board += "\t" + border;
+        for (int i = 0; i < size; i++) {
+            board += i + "\t|";
             for (int j = 0; j < size; j++) {
-                board += "[" + grid[i][j] + "]\t";
+                board += " " + grid[i][j] + " |";
             }
-            board += "\n";
+            board += border;
         }
         return board;
     }

@@ -70,7 +70,7 @@ public class MultiuserSosServer implements MessageListener {
      * @param client the client that the message is sent to.
      */
     public void privateMessage(String message, NetworkInterface client) {
-        client.write(message);
+        client.write("Private Message: " + message);
     }
 
     /**
@@ -157,6 +157,7 @@ public class MultiuserSosServer implements MessageListener {
      * @param client the client that wants to quit.
      */
     public void quit(NetworkInterface client) {
+        broadcastMessage("Game ended due to player disconnect.");
         game.removePlayer(clients.indexOf(client));
         game.reset();
         clients.remove(client);

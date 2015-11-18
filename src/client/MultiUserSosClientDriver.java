@@ -32,10 +32,8 @@ public class MultiUserSosClientDriver {
             System.out.println("Error: The IP address of " + args[0] + " could not be determined.");
             System.exit(1);
         } catch (SocketException se) {
-            System.out.println("Error: Connection refuse.");
+            System.out.println("Error: Connection refused.");
             System.exit(1);
-        } catch (SocketTimeoutException e) {
-            System.out.println("Error: A response was not received within the allotted time.");
         } catch (IOException ioe) {
             System.out.println("Error: Something went wrong while sending or receiving data.");
             System.exit(1);
